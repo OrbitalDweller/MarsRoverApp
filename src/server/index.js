@@ -12,7 +12,16 @@ app.use(bodyParser.json())
 
 app.use('/', express.static(path.join(__dirname, '../public')))
 
-// your API calls
+// API calls
+app.get('/latest_photos/curiosity', async (req, res) => {
+    try {
+        const image = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/latest_photos?api_key=${process.env.API_KEY}`)
+            .then(res => res.json())
+        res.send({ image })
+    } catch (err) {
+        console.log('error:', err);
+    }
+})
 
 // example API call
 app.get('/apod', async (req, res) => {

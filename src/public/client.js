@@ -2,6 +2,7 @@ let store = {
     user: { name: "Student" },
     apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
+    latest_images: '',
 }
 
 // add our markup to the page
@@ -91,7 +92,14 @@ const ImageOfTheDay = (apod) => {
     }
 }
 
-// ------------------------------------------------------  API CALLS
+// API calls
+const getLatestRoverImages = (state) => {
+    let { latest_images } = state;
+
+    fetch(`http://localHost:3000/latest_photos/curiosity`)
+        .then(res => res.json())
+        .then(latest_images => updateStore(store, { latest_images }))
+}
 
 // Example API call
 const getImageOfTheDay = (state) => {
@@ -100,6 +108,4 @@ const getImageOfTheDay = (state) => {
     fetch(`http://localhost:3000/apod`)
         .then(res => res.json())
         .then(apod => updateStore(store, { apod }))
-
-    return data
 }
