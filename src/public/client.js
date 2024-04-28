@@ -18,7 +18,7 @@ const render = async (root, state) => {
 
     const btn = document.getElementById('btn')
     btn.addEventListener('click', function() {
-        getLatestRoverImages(state)
+        root.innerHTML = RoverGalleryApp(state) 
     })
 }
 
@@ -49,6 +49,53 @@ const App = (state) => {
         </main>
         <footer></footer>
     `
+}
+
+function createRoverTile(photo) {
+    const tile = document.createElement('div')
+    const image = document.createElement('img')
+    const heading = document.createElement('h3')
+    const paragraph = document.createElement('p')
+
+    tile.classList.add('grid-item')
+    image.src = photo.img_src
+    heading.textContent = photo.camera.full_name
+    paragraph.textContent = photo.rover.name + ': ' +  photo.earth_date
+
+    tile.appendChild(heading)
+    tile.appendChild(image)
+    tile.appendChild(paragraph)
+
+    return tile
+}
+
+const generateRoverTiles = (latest_images) => {
+
+    if (!latest_images) {
+        getLatestRoverImages(store)
+    }
+
+    const grid = document.createElement('main')
+    latest_images.image.latest_photos.filter((photo) => photo.camera.full_name != 'Mars Hand Lens Imager')
+    .forEach((photo) => {
+        const tile = createRoverTile(photo)
+        grid.appendChild(tile)
+    })
+
+    return `${grid.outerHTML}`
+}
+
+// create page with rover images
+const RoverGalleryApp = (state) => {
+
+    let { latest_images } = state
+
+    return `
+        <header></header>
+        ${generateRoverTiles(latest_images)}
+        <footer></footer>
+    `
+
 }
 
 // listening for load event because page should load before any JS is called
