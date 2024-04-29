@@ -31,7 +31,6 @@ const App = (state) => {
     return `
         <header></header>
         <main>
-            ${Greeting(store.user.name)}
             <section>
                 ${ImageOfTheDay(apod)}
             </section>
@@ -39,9 +38,9 @@ const App = (state) => {
                 <form id="see-rovers">
                     <div class="form-container">
                         <select id="rover" class="form-field__full" name="rover">
-                            <option>Curiosity</option>
-                            <option>Opportunity</option>
-                            <option>Spirit</option>
+                            ${rovers.reduce((options, rover) => {
+                                return options + `<option>${rover}</option>`
+                            }, '')}
                         </select>
                         <div id="btn">See Rover Photos!</div>
                     </div>
