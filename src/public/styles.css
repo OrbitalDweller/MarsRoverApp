@@ -134,6 +134,16 @@ select {
     cursor: pointer;
 }
 
+  #roverButtons {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #roverButtons button {
+    padding: 10px 20px;
+    margin-right: 10px;
+  }
+
 /* Footer */
 .fine-print {
     display: block;

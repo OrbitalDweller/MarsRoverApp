@@ -35,13 +35,13 @@ We have supplied some of the foundational code for you. So follow these steps to
 To complete this project, your UI must show the following:
 
 - [ ] A gallery of the most recent images sent from each mars rover
-- [ ] The launch date, landing date, name and status along with any other information about the rover
-- [ ] A selection bar for the user to choose which rover's information they want to see
+- [x] The launch date, landing date, name and status along with any other information about the rover
+- [x] A selection bar for the user to choose which rover's information they want to see
 
 To complete this project, your UI must do the following:
 
 - [ ] Be responsive. Needs to look good(aka not broken) on phones(max width 768px) and desktop(min-width 991px, max-width 1824px). Tablet view is optional.
-- [ ] Provide a way to dynamically switch the UI to view one of the three rovers 
+- [x] Provide a way to dynamically switch the UI to view one of the three rovers 
 **This can be done using tabs, buttons, or any other UI control
 
 To complete this project, your frontend code must:

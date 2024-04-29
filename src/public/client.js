@@ -2,7 +2,7 @@ let store = {
     user: { name: "Student" },
     apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-    latest_images: '',
+    images: '',
     manifest: '',
 }
 
@@ -16,17 +16,12 @@ const updateStore = (store, newState) => {
 
 const render = async (root, state) => {
     root.innerHTML = App(state)
-
-    const btn = document.getElementById('btn')
-    btn.addEventListener('click', function() {
-        root.innerHTML = RoverGalleryApp(state) 
-    })
 }
 
 
 // create content
 const App = (state) => {
-    let { rovers, apod } = state
+    let { rovers, apod, manifest, images } = state
 
     return `
         <header></header>
@@ -34,68 +29,22 @@ const App = (state) => {
             <section>
                 ${ImageOfTheDay(apod)}
             </section>
+
             <section>
-                <form id="see-rovers">
-                    <div class="form-container">
-                        <select id="rover" class="form-field__full" name="rover">
-                            ${rovers.reduce((options, rover) => {
-                                return options + `<option>${rover}</option>`
-                            }, '')}
-                        </select>
-                        <div id="btn">See Rover Photos!</div>
-                    </div>
-                </form>
+                <div id="froverButtons">
+                    ${rovers.reduce((buttons, rover) => {
+                        return buttons + `<button onclick="getRoverManifest('${rover}')">${rover}</button>`
+                    }, '')}
+                </div>
+            </section>
+
             <section>
+                ${RoverManifest(manifest)}         
+            </section>
+
         </main>
         <footer></footer>
     `
-}
-
-function createRoverTile(photo) {
-    const tile = document.createElement('div')
-    const image = document.createElement('img')
-    const heading = document.createElement('h3')
-    const paragraph = document.createElement('p')
-
-    tile.classList.add('grid-item')
-    image.src = photo.img_src
-    heading.textContent = photo.camera.full_name
-    paragraph.textContent = photo.rover.name + ': ' +  photo.earth_date
-
-    tile.appendChild(heading)
-    tile.appendChild(image)
-    tile.appendChild(paragraph)
-
-    return tile
-}
-
-const generateRoverTiles = (latest_images) => {
-
-    if (!latest_images) {
-        getLatestRoverImages(store)
-    }
-
-    const grid = document.createElement('main')
-    latest_images.image.latest_photos.filter((photo) => photo.camera.full_name != 'Mars Hand Lens Imager')
-    .forEach((photo) => {
-        const tile = createRoverTile(photo)
-        grid.appendChild(tile)
-    })
-
-    return `${grid.outerHTML}`
-}
-
-// create page with rover images
-const RoverGalleryApp = (state) => {
-
-    let { latest_images } = state
-
-    return `
-        <header></header>
-        ${generateRoverTiles(latest_images)}
-        <footer></footer>
-    `
-
 }
 
 // listening for load event because page should load before any JS is called
@@ -106,17 +55,6 @@ window.addEventListener('load', () => {
 // ------------------------------------------------------  COMPONENTS
 
 // Pure function that renders conditional information -- THIS IS JUST AN EXAMPLE, you can delete it.
-const Greeting = (name) => {
-    if (name) {
-        return `
-            <h1>Welcome, ${name}!</h1>
-        `
-    }
-
-    return `
-        <h1>Hello!</h1>
-    `
-}
 
 const RoverLaunchDate = (photoManifest) => {
     if (photoManifest) {
@@ -176,10 +114,13 @@ const ImageOfTheDay = (apod) => {
 }
 
 const RoverManifest = (manifest) => {
+    if (!manifest) {
+        return ''
+    }
     const photoManifest = manifest.manifest.photo_manifest
     if (photoManifest) {
     return (`
-            <p>${RoverName(photoManifest)} rover is currently ${RoverStatus(photoManifest)}.</p>
+            <p>${RoverName(photoManifest)} rover mission is currently ${RoverStatus(photoManifest)}.</p>
             <p>${RoverName(photoManifest)} was launched on ${RoverLaunchDate(photoManifest)} 
             and landed on ${RoverLandingDate(photoManifest)}.</p>
         `)
