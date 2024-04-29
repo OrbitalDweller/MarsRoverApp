@@ -119,6 +119,35 @@ const Greeting = (name) => {
     `
 }
 
+const RoverLaunchDate = (photoManifest) => {
+    if (photoManifest) {
+        return photoManifest.launch_date
+    }
+    return 'unknown'
+}
+
+const RoverLandingDate = (photoManifest) => {
+    if (photoManifest.landing_date) {
+        return photoManifest.landing_date
+    }
+    return 'unknown'
+}
+
+const RoverName = (photoManifest) => {
+    if (photoManifest.name) {
+        return photoManifest.name
+    }
+    return 'unknown'
+}
+
+const RoverStatus = (photoManifest) => {
+    if (photoManifest.status) {
+        return photoManifest.status
+    }
+    return 'unknown'
+}
+
+
 // Example of a pure function that renders infomation requested from the backend
 const ImageOfTheDay = (apod) => {
 
@@ -147,6 +176,17 @@ const ImageOfTheDay = (apod) => {
     }
 }
 
+const RoverManifest = (manifest) => {
+    const photoManifest = manifest.manifest.photo_manifest
+    if (photoManifest) {
+    return (`
+            <p>${RoverName(photoManifest)} rover is currently ${RoverStatus(photoManifest)}.</p>
+            <p>${RoverName(photoManifest)} was launched on ${RoverLaunchDate(photoManifest)} 
+            and landed on ${RoverLandingDate(photoManifest)}.</p>
+        `)
+    }
+}
+
 // API calls
 const getLatestRoverImages = (state) => {
     let { latest_images } = state;
@@ -159,7 +199,7 @@ const getLatestRoverImages = (state) => {
 const getRoverManifest = (rover) => {
     fetch(`http://localHost:3000/manifest/${rover}`)
         .then(res => res.json())
-        .then(manifest => updateStore(store, { manifest }))
+        .then(manifest =>updateStore(store, { manifest }))
 }
 
 // Example API call
