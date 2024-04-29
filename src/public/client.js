@@ -3,6 +3,7 @@ let store = {
     apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
     latest_images: '',
+    manifest: '',
 }
 
 // add our markup to the page
@@ -153,6 +154,12 @@ const getLatestRoverImages = (state) => {
     fetch(`http://localHost:3000/latest_photos/curiosity`)
         .then(res => res.json())
         .then(latest_images => updateStore(store, { latest_images }))
+}
+
+const getRoverManifest = (rover) => {
+    fetch(`http://localHost:3000/manifest/${rover}`)
+        .then(res => res.json())
+        .then(manifest => updateStore(store, { manifest }))
 }
 
 // Example API call
