@@ -145,9 +145,9 @@ const RoverPhotos = (manifest, photos) => {
     if (!photos || rover != photos.photos.photos[0].rover.name) {
         return `<button onclick="getRoverPhotos('${rover}','${sol}')">See latest photos from ${rover}</button>`
     }
-    return (`
-            <img src="${photos.photos.photos[0].img_src}" height="350px" width="100%" />
-    `)
+    return photos.photos.photos.reduce((images, image) => {
+        return images + `<img src="${image.img_src}" height="350px" width="75%" />`
+    }, '') 
 }
 
 // API calls
