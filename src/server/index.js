@@ -13,16 +13,6 @@ app.use(bodyParser.json())
 app.use('/', express.static(path.join(__dirname, '../public')))
 
 // API calls
-app.get('/latest_photos/curiosity', async (req, res) => {
-    try {
-        const image = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/latest_photos?api_key=${process.env.API_KEY}`)
-            .then(res => res.json())
-        res.send({ image })
-    } catch (err) {
-        console.log('error:', err);
-    }
-})
-
 app.get('/manifest/:rover', async (req, res) => {
     try {
         const rover = req.params.rover
@@ -31,6 +21,18 @@ app.get('/manifest/:rover', async (req, res) => {
         res.send({ manifest })
     } catch (err) {
         console.log('error:', err)
+    }
+})
+
+app.get('/photo/:rover/:sol', async (req, res) => {
+    try {
+        const rover = req.params.rover
+        const sol = req.params.sol
+        let photos = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${rover}/photos?api_key=${process.env.API_KEY}&sol=${sol}`)
+            .then(res => res.json())
+        res.send({ photos })
+    } catch (err) {
+        console.log('error', err)
     }
 })
 

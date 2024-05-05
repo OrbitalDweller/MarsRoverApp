@@ -2,7 +2,7 @@ let store = {
     user: { name: "Student" },
     apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-    images: '',
+    photos: '',
     manifest: '',
 }
 
@@ -21,7 +21,7 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-    let { rovers, apod, manifest, images } = state
+    let { rovers, apod, manifest, photos } = state
 
     return `
         <header></header>
@@ -40,6 +40,10 @@ const App = (state) => {
 
             <section>
                 ${RoverManifest(manifest)}         
+            </section>
+
+            <section>
+                ${RoverPhotos(manifest, photos)}
             </section>
 
         </main>
@@ -84,6 +88,11 @@ const RoverStatus = (photoManifest) => {
     return 'unknown'
 }
 
+const RoverMaxSol = (photoManifest) => {
+    if (photoManifest) {
+        return photoManifest.max_sol
+    }
+}
 
 // Example of a pure function that renders infomation requested from the backend
 const ImageOfTheDay = (apod) => {
@@ -123,23 +132,35 @@ const RoverManifest = (manifest) => {
             <p>${RoverName(photoManifest)} rover mission is currently ${RoverStatus(photoManifest)}.</p>
             <p>${RoverName(photoManifest)} was launched on ${RoverLaunchDate(photoManifest)} 
             and landed on ${RoverLandingDate(photoManifest)}.</p>
-        `)
+    `)
     }
 }
 
-// API calls
-const getLatestRoverImages = (state) => {
-    let { latest_images } = state;
-
-    fetch(`http://localHost:3000/latest_photos/curiosity`)
-        .then(res => res.json())
-        .then(latest_images => updateStore(store, { latest_images }))
+const RoverPhotos = (manifest, photos) => {
+    if (!manifest) {
+        return ''
+    }
+    const rover = RoverName(manifest.manifest.photo_manifest)
+    const sol = RoverMaxSol(manifest.manifest.photo_manifest)
+    if (!photos || rover != photos.photos.photos[0].rover.name) {
+        return `<button onclick="getRoverPhotos('${rover}','${sol}')">See latest photos from ${rover}</button>`
+    }
+    return (`
+            <img src="${photos.photos.photos[0].img_src}" height="350px" width="100%" />
+    `)
 }
 
+// API calls
 const getRoverManifest = (rover) => {
     fetch(`http://localHost:3000/manifest/${rover}`)
         .then(res => res.json())
         .then(manifest =>updateStore(store, { manifest }))
+}
+
+const getRoverPhotos = (rover, sol) => {
+    fetch(`http://localHost:3000/photo/${rover}/${sol}`)
+        .then(res => res.json())
+        .then(photos => updateStore(store, { photos }))
 }
 
 // Example API call
