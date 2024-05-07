@@ -1,16 +1,16 @@
-let store = {
+let store = Immutable.Map({
     user: { name: "Student" },
     apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
     photos: '',
     manifest: '',
-}
+})
 
 // add our markup to the page
 const root = document.getElementById('root')
 
 const updateStore = (store, newState) => {
-    store = Object.assign(store, newState)
+    store = store.merge(newState)
     render(root, store)
 }
 
@@ -21,7 +21,11 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-    let { rovers, apod, manifest, photos } = state
+    let rovers = state.get('rovers')
+    let apod = state.get('apod')
+    let manifest = state.get('manifest')
+    let photos = state.get('photos')
+
 
     return `
         <header></header>
@@ -100,10 +104,9 @@ const ImageOfTheDay = (apod) => {
     // If image does not already exist, or it is not from today -- request it again
     const today = new Date()
     const photodate = new Date(apod.date)
-    if (!apod || apod.date === today.getDate() ) {
+    if (!apod || photodate === today.getDate() ) {
         getImageOfTheDay(store)
     }
-
     // check if the photo of the day is actually type video!
     if (apod.media_type === "video") {
         return (`
@@ -162,8 +165,6 @@ const getRoverPhotos = (rover, sol) => {
 
 // Example API call
 const getImageOfTheDay = (state) => {
-    let { apod } = state
-
     fetch(`http://localhost:3000/apod`)
         .then(res => res.json())
         .then(apod => updateStore(store, { apod }))
