@@ -35,7 +35,7 @@ const App = (state) => {
             </section>
 
             <section>
-                <div id="froverButtons">
+                <div id="roverButtons">
                     ${rovers.reduce((buttons, rover) => {
                         return buttons + `<button onclick="getRoverManifest('${rover}')">${rover}</button>`
                     }, '')}
@@ -87,21 +87,23 @@ const ImageOfTheDay = (apod) => {
 
     // If image does not already exist, or it is not from today -- request it again
     const today = new Date().toISOString().split('T')[0];
-    if (!apod || apod.date !== today) {
+    console.log(apod)
+    if (!apod) {
         getImageOfTheDay(store)
+        return '<p>Loading...</p>'
     }
     // check if the photo of the day is actually type video!
     if (apod.media_type === "video") {
-        return (`
+        return `
             <p>See today's featured video <a href="${apod.url}">here</a></p>
             <p>${apod.title}</p>
             <p>${apod.explanation}</p>
-        `)
+        `
     } else {
-        return (`
+        return `
             <img src="${apod.image.url}" height="350px" width="100%" />
             <p>${apod.image.explanation}</p>
-        `)
+        `
     }
 }
 
@@ -133,7 +135,7 @@ const RoverPhotos = (manifest, photos) => {
 
 // API calls
 const getRoverManifest = (rover) => {
-    fetch(`http://localHost:3000/manifest/${rover}`)
+    fetch(`http://localhost:3000/manifest/${rover}`)
         .then(res => res.json())
         .then(manifest => {
             store = updateStore(store, { manifest })
