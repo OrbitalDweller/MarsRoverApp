@@ -1,5 +1,4 @@
 let store = Immutable.Map({
-    user: { name: "Student" },
     apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
     photos: '',
@@ -10,8 +9,9 @@ let store = Immutable.Map({
 const root = document.getElementById('root')
 
 const updateStore = (store, newState) => {
-    store = store.merge(newState)
-    render(root, store)
+    const newStore = store.merge(newState)
+    render(root, newStore)
+    return newStore
 }
 
 const render = async (root, state) => {
@@ -62,49 +62,32 @@ window.addEventListener('load', () => {
 
 // ------------------------------------------------------  COMPONENTS
 
-// Pure function that renders conditional information -- THIS IS JUST AN EXAMPLE, you can delete it.
-
 const RoverLaunchDate = (photoManifest) => {
-    if (photoManifest) {
-        return photoManifest.launch_date
-    }
-    return 'unknown'
+    return photoManifest ? photoManifest.launch_date : 'unknown'
 }
 
 const RoverLandingDate = (photoManifest) => {
-    if (photoManifest.landing_date) {
-        return photoManifest.landing_date
-    }
-    return 'unknown'
+    return photoManifest.landing_date ? photoManifest.landing_date : 'unknown'
 }
 
 const RoverName = (photoManifest) => {
-    if (photoManifest.name) {
-        return photoManifest.name
-    }
-    return 'unknown'
+    return photoManifest.name ? photoManifest.name : 'unknown'
 }
 
 const RoverStatus = (photoManifest) => {
-    if (photoManifest.status) {
-        return photoManifest.status
-    }
-    return 'unknown'
+    return photoManifest.status ? photoManifest.status : 'unknown'
 }
 
 const RoverMaxSol = (photoManifest) => {
-    if (photoManifest) {
-        return photoManifest.max_sol
-    }
+    return photoManifest ? photoManifest.max_sol : 'unknown'
 }
 
 // Example of a pure function that renders infomation requested from the backend
 const ImageOfTheDay = (apod) => {
 
     // If image does not already exist, or it is not from today -- request it again
-    const today = new Date()
-    const photodate = new Date(apod.date)
-    if (!apod || photodate === today.getDate() ) {
+    const today = new Date().toISOString().split('T')[0];
+    if (!apod || apod.date !== today) {
         getImageOfTheDay(store)
     }
     // check if the photo of the day is actually type video!
@@ -127,13 +110,11 @@ const RoverManifest = (manifest) => {
         return ''
     }
     const photoManifest = manifest.manifest.photo_manifest
-    if (photoManifest) {
-    return (`
+    return photoManifest ? `
             <p>${RoverName(photoManifest)} rover mission is currently ${RoverStatus(photoManifest)}.</p>
             <p>${RoverName(photoManifest)} was launched on ${RoverLaunchDate(photoManifest)} 
             and landed on ${RoverLandingDate(photoManifest)}.</p>
-    `)
-    }
+    ` : ''
 }
 
 const RoverPhotos = (manifest, photos) => {
@@ -154,18 +135,28 @@ const RoverPhotos = (manifest, photos) => {
 const getRoverManifest = (rover) => {
     fetch(`http://localHost:3000/manifest/${rover}`)
         .then(res => res.json())
-        .then(manifest =>updateStore(store, { manifest }))
+        .then(manifest => {
+            store = updateStore(store, { manifest })
+        })
 }
 
 const getRoverPhotos = (rover, sol) => {
-    fetch(`http://localHost:3000/photo/${rover}/${sol}`)
+    fetch(`http://localhost:3000/photo/${rover}/${sol}`)
         .then(res => res.json())
-        .then(photos => updateStore(store, { photos }))
+        .then(photos => {
+            store = updateStore(store, { photos })
+        })
 }
 
 // Example API call
 const getImageOfTheDay = (state) => {
     fetch(`http://localhost:3000/apod`)
         .then(res => res.json())
-        .then(apod => updateStore(store, { apod }))
+        .then(apod =>  {
+            store = updateStore(store, { apod })
+        })
 }
+
+window.getRoverManifest = getRoverManifest;
+window.getRoverPhotos = getRoverPhotos;
+window.getImageOfTheDay = getImageOfTheDay;
